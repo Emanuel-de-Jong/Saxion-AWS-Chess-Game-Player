@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+    chess_db:
+      container_name: chess_db_c
+      image: mysql:8.0
+      restart: always
+      environment:
+        MYSQL_USER: admin
+        MYSQL_PASSWORD: "4oMmmqD6ikDmB"
+        MYSQL_DATABASE: chess_db
+        MYSQL_ROOT_PASSWORD: "aH7zMVM9XUE5M"
+      ports:
+        - "3306:3306"
+      expose:
+        - "3306"

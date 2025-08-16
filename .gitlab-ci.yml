@@ -1,0 +1,45 @@
+stages:
+  - test
+  - build
+  - deploy
+
+test-backend:
+  stage: test
+  image: python:3.10
+  before_script:
+    - cd backend
+    - pip install poetry
+    - poetry install
+  script:
+    - poetry run python3 main_tests.py
+  artifacts:
+    paths:
+      - backend/test_results.txt
+    expire_in: 1 month
+
+build-backend:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  script:
+    - cd backend
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t registry.gitlab.com/saxion.nl/hbo-ict/2.3-devops/2022-2023/87 .
+    - docker push registry.gitlab.com/saxion.nl/hbo-ict/2.3-devops/2022-2023/87
+
+deploy-backend:
+  image: ubuntu:22.04
+  stage: deploy
+  script:
+    - echo "Installing new image on backend EC2"
+    - echo "apt update"
+    - apt update
+    - echo "apt install openssh-client"
+    - apt install --assume-yes openssh-client
+    - echo "chmod ssh key"
+    - chmod 600 $SSH_PRIVATE_KEY_FILE
+    - echo "Stop, build and run backend 1 docker container"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY_FILE ubuntu@54.198.134.93 'sudo bash dockerize.sh stop && sudo bash dockerize.sh build && sudo bash dockerize.sh run'
+    - echo "Stop, build and run backend 2 docker container"
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY_FILE ubuntu@3.235.230.62 'sudo bash dockerize.sh stop && sudo bash dockerize.sh build && sudo bash dockerize.sh run'

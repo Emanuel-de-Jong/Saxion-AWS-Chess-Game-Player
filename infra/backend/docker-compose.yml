@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+    chess_backend:
+      container_name: chess_backend_c
+      image: registry.gitlab.com/saxion.nl/hbo-ict/2.3-devops/2022-2023/87:latest
+      environment:
+        MYSQL_USER: admin
+        MYSQL_PASSWORD: "4oMmmqD6ikDmB"
+        MYSQL_DATABASE: chess_db
+        FLASK_ENV: production
+        MYSQL_HOST: 54.167.208.151
+      ports:
+        - "5001:5001"

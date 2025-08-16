@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+    chess_db:
+      container_name: chess_db_c
+      image: mysql:8.0
+      restart: always
+      environment:
+        MYSQL_USER: admin
+        MYSQL_PASSWORD: "4oMmmqD6ikDmB"
+        MYSQL_DATABASE: chess_db
+        MYSQL_ROOT_PASSWORD: "aH7zMVM9XUE5M"
+      ports:
+        - "3306:3306"
+      expose:
+        - "3306"
+      volumes:
+        - chess_db:/var/lib/mysql
+      healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 10
+    chess_backend:
+      container_name: chess_backend_c
+      build: ./backend
+      depends_on:
+        chess_db:
+          condition: service_healthy
+      environment:
+        MYSQL_USER: admin
+        MYSQL_PASSWORD: "4oMmmqD6ikDmB"
+        MYSQL_DATABASE: chess_db
+        FLASK_ENV: production
+        MYSQL_HOST: chess_db_c
+      ports:
+        - "5001:5001"
+      links:
+        - chess_db
+    chess_frontend:
+      container_name: chess_frontend_c
+      image: nginx:latest
+      ports:
+        - "80:80"
+      volumes:
+        - ./frontend/dist:/usr/share/nginx/html
+        - ./frontend/lib:/usr/share/nginx/html/lib
+volumes:
+  chess_db:
