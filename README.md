@@ -3,8 +3,8 @@ For the class: 2.3 DevOps
 
 Easily deploy a web chess game record player using Terraform to create a docker based infrastructure on AWS.
 
-**Active Development:** <br>
-**Last Change:** <br>
+**Active Development:** 2023-04-04 - 2023-04-16<br>
+**Last Change:** 2023-04-20<br>
 
 | | |
 | :---: | :---: |
